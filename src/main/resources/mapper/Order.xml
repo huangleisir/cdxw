@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="Order">  
+
+ <resultMap id="BaseResultMap" type="com.jst.bean.Order" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="open_id" property="openId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="VARCHAR" />
+    <result column="pay_type" property="payType" jdbcType="VARCHAR" />
+    <result column="pay_status" property="payStatus" jdbcType="INTEGER" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="send_status" property="sendStatus" jdbcType="INTEGER" />
+    <result column="food_amount" property="foodAmount" jdbcType="INTEGER" />
+    <result column="send_amount" property="sendAmount" jdbcType="INTEGER" />
+    <result column="order_amount" property="orderAmount" jdbcType="INTEGER" />
+    <result column="addr_id" property="addrId" jdbcType="VARCHAR" />
+    <result column="addr" property="addr" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="sex" property="sex" jdbcType="INTEGER" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="time" property="time" jdbcType="TIMESTAMP" />
+    
+  </resultMap>
+  
+  <sql id="table_name_order">t_order</sql>
+   <sql id="table_name_addr">t_addr</sql>
+  <sql id="Base_Column_List" >
+    id,open_id,addr,name,sex,mobile
+  </sql>
+	
+  <select id="selectAll" parameterType="com.jst.bean.Order"  resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from  <include refid="table_name_addr" />
+    <trim prefix="WHERE" prefixOverrides="AND|OR">
+      <if test="openId != null" >
+      and open_id = #{openId}
+      </if>
+     </trim>
+  </select>
+  
+  <select id="selectOrder" parameterType="com.jst.bean.Order"  resultMap="BaseResultMap" >
+select  case when o.pay_type='1' then '一卡通支付' else null end pay_type,o.id,o.addr_id,date_format(o.create_time,'%Y-%m-%d %H:%i:%s') create_time,o.food_amount,o.mark,o.open_id
+,case when pay_status = 0 and TIMESTAMPDIFF(second,create_time,now()) > 15*60
+  then 2 else pay_status end   pay_status, 
+  DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%s') time,
+o.send_amount,o.send_status,
+a.id as aid,a.addr,a.mobile,a.name,a.sex,o.food_amount+o.send_amount order_amount
+ from t_order o,t_addr a  where  o.addr_id = a.id 
+ 
+    <trim >
+      <if test="openId != null" >
+    and   o.open_id = #{openId}
+      </if>
+      <if test="id != null" >
+    and   o.id = #{id}
+      </if>
+     </trim>
+     order by create_time desc 
+  </select>
+  
+  
+  
+  <insert id="insert" parameterType="com.jst.bean.Order" >
+    insert into t_order (id, open_id, create_time, pay_type,pay_status,print_status,mark,send_status,food_amount,send_amount,
+      addr_id)
+    values (#{id,jdbcType=VARCHAR}, #{openId,jdbcType=VARCHAR},now(),#{payType,jdbcType=VARCHAR} ,
+    0,0,#{mark,jdbcType=VARCHAR},0,#{foodAmount,jdbcType=INTEGER},#{sendAmount,jdbcType=INTEGER},#{addrId,jdbcType=VARCHAR})
+  </insert>
+  
+  <!-- 订单支付成功，更新订单状态 -->
+  <update id="update" parameterType="com.jst.bean.Order">
+  	update   <include refid="table_name_order" />
+  	<trim prefix="set" suffixOverrides=",">
+	  <if test="payStatus != null">
+	  		pay_status=#{payStatus},
+	  	</if>
+	  	<if test="sendStatus != null">
+	  		send_status=#{sendStatus},
+	  	</if>
+  	</trim>
+  	 where id=#{id}
+  </update>
+  
+    <select id="getOrderListByOpenId" parameterType="com.jst.bean.Order"  resultMap="BaseResultMap" >
+select  case when o.pay_type='1' then '一卡通支付' else null end pay_type,o.id,o.addr_id,date_format(o.create_time,'%Y-%m-%d %H:%i:%s') create_time,o.food_amount,o.mark,o.open_id
+,case when pay_status = 0 and TIMESTAMPDIFF(second,create_time,now()) > 15*60
+  then 2 else pay_status end   pay_status, 
+  DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%s') time,
+o.send_amount,o.send_status,
+o.food_amount+o.send_amount order_amount,o.open_id as openId
+ from t_order o 
+ where 
+
+    	o.open_id = #{openId}
+
+ order by create_time desc 
+  </select>
+  
+</mapper>

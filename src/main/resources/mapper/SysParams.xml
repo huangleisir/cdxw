@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="SysParams">  
+
+ <resultMap id="BaseResultMap" type="com.jst.bean.SysParams" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="order_cill_amount" property="orderCillAmount" jdbcType="INTEGER" />
+    <result column="send_amount" property="sendAmount" jdbcType="INTEGER" />
+    <result column="order_free_amount" property="orderFreeAmount" jdbcType="INTEGER" />
+    
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id,order_cill_amount,send_amount,order_free_amount
+  </sql>
+	
+  <select id="selectOne" parameterType="java.lang.String"  resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_sys_params
+    where id = #{id}
+  </select>
+
+</mapper>

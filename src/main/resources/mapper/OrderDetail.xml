@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="OrderDetail">  
+
+ <resultMap id="BaseResultMap" type="com.jst.bean.OrderDetail" >
+    <id property="id" column="id" jdbcType="VARCHAR" />  
+        <result property="foodId" column="food_id" jdbcType="VARCHAR" /> 
+        <result property="price" column="price" jdbcType="INTEGER" />
+        <result property="num" column="num" jdbcType="INTEGER" />
+	    <result column="type_id" property="typeId" jdbcType="VARCHAR" />
+	    <result column="food_name" property="foodName" jdbcType="VARCHAR" />
+	    <result column="pic_path" property="picPath" jdbcType="VARCHAR" />
+	    <result column="sale_price" property="salePrice" jdbcType="INTEGER" />
+	    <result column="old_price" property="oldPrice" jdbcType="INTEGER" />
+	    <result column="status" property="status" jdbcType="INTEGER" />
+	    <result column="spice_level" property="spiceLevel" jdbcType="INTEGER" />
+	    <result column="mark" property="mark"  />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id,food_id,price,num
+  </sql>
+	
+  <select id="select" parameterType="com.jst.bean.Order"  resultMap="BaseResultMap" >
+    select d.order_id order_id,d.food_id,price,num,type_id,food_name,pic_path,sale_price,old_price,status,spice_level,mark
+from t_order_detail d,t_food f where d.food_id = f.food_id 
+    <trim>
+      <if test="id != null" >
+      and order_id = #{id}
+      </if>
+     </trim>
+  </select>
+  
+  <insert id="insert" parameterType="com.jst.bean.Address" >
+    insert into t_order_detail (id,order_id,food_id,price,num)
+    values (#{id,jdbcType=VARCHAR},#{orderId,jdbcType=VARCHAR}, #{foodId,jdbcType=VARCHAR}, #{price,jdbcType=INTEGER}, 
+      #{num,jdbcType=INTEGER})
+  </insert>
+  
+ 
+</mapper>

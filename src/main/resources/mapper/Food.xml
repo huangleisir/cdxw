@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="Food">  
+
+ <resultMap id="BaseResultMap" type="com.jst.bean.Food" >
+    <result column="food_id" property="foodId" jdbcType="VARCHAR" />
+    <result column="type_id" property="typeId" jdbcType="VARCHAR" />
+    <result column="food_name" property="foodName" jdbcType="VARCHAR" />
+    <result column="pic_path" property="picPath" jdbcType="VARCHAR" />
+    <result column="sale_price" property="salePrice" jdbcType="INTEGER" />
+    <result column="old_price" property="oldPrice" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="spice_level" property="spiceLevel" jdbcType="INTEGER" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="commend_mark" property="commendMark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    food_id,type_id,food_name,pic_path,sale_price,old_price,status,mark,spice_level,commend_mark
+  </sql>
+	
+  <select id="selectAll" parameterType="com.jst.bean.Food"  resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_food
+    <trim prefix="WHERE" prefixOverrides="AND|OR">
+      <if test="typeId != null" >
+      and type_id = #{typeId}
+      </if>
+       and (status=1 or status=2 ) 
+     </trim>
+  </select>
+  
+    <!-- 根据foodId查询food -->
+  <select id="selectOne" parameterType="java.lang.String" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List" />
+  	from t_food where food_id = #{foodId}
+  </select>
+ 
+</mapper>

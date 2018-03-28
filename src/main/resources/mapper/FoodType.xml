@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="FoodType">  
+
+ <resultMap id="BaseResultMap" type="com.jst.bean.FoodType" >
+    <result column="type_id" property="typeId" jdbcType="VARCHAR" />
+    <result column="type_name" property="typeName" jdbcType="VARCHAR" />
+    <result column="type_index" property="typeIndex" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    type_id ,type_name,type_index,status,mark
+  </sql>
+	
+  <select id="selectAll" parameterType="com.jst.bean.FoodType"  resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_food_type
+    <trim prefix="WHERE" prefixOverrides="AND|OR">
+      <if test="status != null" >
+       and status=#{status}
+      </if>
+     </trim>
+     order by case when ifnull(type_index,'')='' then 0 else 1 end desc, type_index asc
+  </select>
+  
+  <select id="userLogin" parameterType="User"  resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from user where id =#{id} or name =#{name}
+  </select>
+  
+  <update id="update" parameterType="User">
+   	update user 
+   	<set>
+   	<if test="name !=null and name !=''">
+   	  name=#{name},
+   	</if>
+   	<if test="pwd !=null and pwd !=''">
+   	  pwd=#{pwd}
+   	</if>
+   	</set>
+   	where id = #{id}  or name =#{name}
+  </update>
+  <insert id="insert" parameterType="User">
+  	INSERT INTO user (id,name,pwd) VALUES (#{id},#{name}, #{pwd});
+  </insert>
+ 
+</mapper>
